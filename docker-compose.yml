@@ -1,0 +1,16 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: go_app
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./.env:/usr/src/app/.env
+    environment:
+      - PORT=${PORT}
+      - APP_ENV=${MODE}
+    env_file:
+      - .env
