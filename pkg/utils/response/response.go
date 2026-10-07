@@ -28,9 +28,10 @@ func SuccessWithMessage(c *gin.Context, message string, data any) {
 	})
 }
 
-func Created(c *gin.Context, data any) {
+func Created(c *gin.Context, msg string, data any) {
 	c.JSON(http.StatusCreated, APIResponse{
 		Success: true,
+		Message: msg,
 		Data:    data,
 	})
 }
