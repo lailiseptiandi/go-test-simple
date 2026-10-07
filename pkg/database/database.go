@@ -49,6 +49,7 @@ func DisconnectDB(db *gorm.DB) {
 
 func MigrateDB(db *gorm.DB) {
 	db.AutoMigrate(&models.Payment{})
+	db.AutoMigrate(&models.User{})
 }
 
 func AddColumn(db *gorm.DB, dst interface{}, column string) {
