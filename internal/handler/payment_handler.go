@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/lailiseptiandi/go-test-simple/internal/dtos/request"
 	"github.com/lailiseptiandi/go-test-simple/internal/services"
-	"github.com/lailiseptiandi/go-test-simple/pkg/response"
+	"github.com/lailiseptiandi/go-test-simple/pkg/utils/response"
 )
 
 type PaymentHandler struct {
@@ -30,7 +30,7 @@ func (h *PaymentHandler) CreatePayment(c *gin.Context) {
 		response.InternalServerError(c, err.Error())
 		return
 	}
-	response.Created(c, "Successfully created payment")
+	response.Created(c, "Successfully created payment", nil)
 }
 
 func (h *PaymentHandler) CreatePaymentIdempotencyKey(c *gin.Context) {
@@ -59,5 +59,5 @@ func (h *PaymentHandler) CreatePaymentIdempotencyKey(c *gin.Context) {
 		return
 	}
 
-	response.Created(c, payment)
+	response.Created(c, "successfully create payment", payment)
 }
