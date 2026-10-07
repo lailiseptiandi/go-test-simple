@@ -19,14 +19,31 @@ func InitRoutes(dbs *gorm.DB, r *gin.Engine) {
 
 	// repository
 	paymentRepo := repository.NewPaymentRepository(dbs)
+	userRepo := repository.NewUserRepository(dbs)
 
 	// service
 	paymentService := services.NewPaymentService(&paymentRepo)
+	userService := services.NewUserService(&userRepo)
 
 	// handler
 	paymentHandler := handler.NewPaymentHandler(paymentService)
+	userHandler := handler.NewUserHandler(userService)
 
-	paymentGroupRoute := r.Group("payment")
+	// api group
+	apiGroupRoute := r.Group("api/v1/")
+	// User Route
+	userGroupRoute := apiGroupRoute.Group("users")
+	userGroupRoute.POST("/", userHandler.Create)
+	userGroupRoute.GET("/", userHandler.Get)
+	userGroupRoute.GET("/:id", userHandler.GetByID)
+	userGroupRoute.PUT("/:id", userHandler.Update)
+	userGroupRoute.DELETE("/:id", userHandler.Delete)
+
+	// Payment Route
+	paymentGroupRoute := apiGroupRoute.Group("payment")
 	paymentGroupRoute.POST("/", paymentHandler.CreatePayment)
 	paymentGroupRoute.POST("/idempotency_key", paymentHandler.CreatePaymentIdempotencyKey)
+
+	// TODO: module auth
+
 }
