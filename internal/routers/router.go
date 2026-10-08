@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/lailiseptiandi/go-test-simple/internal/handler"
+	"github.com/lailiseptiandi/go-test-simple/internal/handlers"
 	"github.com/lailiseptiandi/go-test-simple/internal/repository"
 	"github.com/lailiseptiandi/go-test-simple/internal/services"
 	"gorm.io/gorm"
@@ -26,8 +26,8 @@ func InitRoutes(dbs *gorm.DB, r *gin.Engine) {
 	userService := services.NewUserService(&userRepo)
 
 	// handler
-	paymentHandler := handler.NewPaymentHandler(paymentService)
-	userHandler := handler.NewUserHandler(userService)
+	paymentHandler := handlers.NewPaymentHandler(paymentService)
+	userHandler := handlers.NewUserHandler(userService)
 
 	// api group
 	apiGroupRoute := r.Group("api/v1/")
