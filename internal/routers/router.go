@@ -24,13 +24,20 @@ func InitRoutes(dbs *gorm.DB, r *gin.Engine) {
 	// service
 	paymentService := services.NewPaymentService(&paymentRepo)
 	userService := services.NewUserService(&userRepo)
+	authService := services.NewAuthService(&userRepo)
 
 	// handler
 	paymentHandler := handlers.NewPaymentHandler(paymentService)
 	userHandler := handlers.NewUserHandler(userService)
+	authHandler := handlers.NewAuthHandler(authService)
 
 	// api group
 	apiGroupRoute := r.Group("api/v1/")
+
+	// login register
+	apiGroupRoute.POST("login", authHandler.Login)
+	apiGroupRoute.POST("register", authHandler.Register)
+
 	// User Route
 	userGroupRoute := apiGroupRoute.Group("users")
 	userGroupRoute.POST("/", userHandler.Create)

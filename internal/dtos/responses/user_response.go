@@ -61,3 +61,23 @@ func (us *UserResponse) FormatterGetUserResponse(users []*models.User) []*UserRe
 
 	return datas
 }
+
+type UserResponseLogin struct {
+	Username     string `json:"username"`
+	Email        string `json:"email"`
+	Role         string `json:"role"`
+	AccessToken  string `json:"access_token"`
+	TokenType    string `json:"token_type"`
+	RefreshToken string `json:"refresh_token"`
+}
+
+func (us *UserResponse) FormatterLoginResponse(user models.User) UserResponseLogin {
+	return UserResponseLogin{
+		Username:     user.Username,
+		Email:        user.Email,
+		Role:         ConvertRoleName(int(user.Roles)),
+		AccessToken:  user.AccessToken,
+		TokenType:    "Bearer",
+		RefreshToken: user.RefreshToken,
+	}
+}

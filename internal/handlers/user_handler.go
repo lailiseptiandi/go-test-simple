@@ -49,7 +49,7 @@ func (h *UserHandler) Get(c *gin.Context) {
 	if limit <= 0 {
 		limit = 20
 	}
-	req := request.UserRequestList{
+	req := request.UserListRequest{
 		Page:   page,
 		Limit:  limit,
 		Search: c.Query("search"),

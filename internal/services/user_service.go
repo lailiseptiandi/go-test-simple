@@ -14,7 +14,7 @@ import (
 
 type UserService interface {
 	Create(ctx context.Context, req request.UserRequest) (*models.User, error)
-	Get(req request.UserRequestList) ([]*models.User, error)
+	Get(req request.UserListRequest) ([]*models.User, error)
 	FindByID(id string) (*models.User, error)
 	Update(ctx context.Context, req request.UserRequest) (*models.User, error)
 	Delete(ctx context.Context, id string) error
@@ -46,7 +46,7 @@ func (s *userService) Create(ctx context.Context, req request.UserRequest) (*mod
 	return user, nil
 }
 
-func (s *userService) Get(req request.UserRequestList) ([]*models.User, error) {
+func (s *userService) Get(req request.UserListRequest) ([]*models.User, error) {
 	users, err := s.userRepo.Get(req)
 	if err != nil {
 		return nil, err
@@ -103,10 +103,11 @@ func (s *userService) Update(ctx context.Context, req request.UserRequest) (*mod
 	if req.Password != "" {
 		// check password
 		hashPassword, _ := utils.HashPassword(req.Password)
-		isMatchPassword := utils.CheckPasswordHash(userDetail.Password, hashPassword)
+		isMatchPassword := utils.CheckPasswordHash(hashPassword, userDetail.Password)
 
 		// new value if not match password old
 		if !isMatchPassword {
+			fmt.Println("ini apa ", hashPassword)
 			data.Password = hashPassword
 		}
 	}
@@ -132,4 +133,26 @@ func (s *userService) Delete(ctx context.Context, id string) error {
 	}
 
 	return nil
+}
+
+func (s *userService) ValidateUser(user models.User) error {
+	if user.Username == "" {
+		return errors.New("username cannot be empty")
+	}
+
+	if user.Email == "" {
+		return errors.New("email cannot be empty")
+	}
+
+	existingUser, err := s.userRepo.FindByEmail(user.Email)
+	if err != nil {
+		return err
+	}
+
+	if existingUser != nil {
+		return errors.New("user with this email already exists")
+	}
+
+	return nil
+
 }
