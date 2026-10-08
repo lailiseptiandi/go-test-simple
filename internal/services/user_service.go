@@ -107,7 +107,6 @@ func (s *userService) Update(ctx context.Context, req request.UserRequest) (*mod
 
 		// new value if not match password old
 		if !isMatchPassword {
-			fmt.Println("ini apa ", hashPassword)
 			data.Password = hashPassword
 		}
 	}
