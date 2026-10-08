@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/lailiseptiandi/go-test-simple/internal/handlers"
+	"github.com/lailiseptiandi/go-test-simple/internal/middlewares"
 	"github.com/lailiseptiandi/go-test-simple/internal/repository"
 	"github.com/lailiseptiandi/go-test-simple/internal/services"
 	"gorm.io/gorm"
@@ -40,17 +41,15 @@ func InitRoutes(dbs *gorm.DB, r *gin.Engine) {
 
 	// User Route
 	userGroupRoute := apiGroupRoute.Group("users")
-	userGroupRoute.POST("/", userHandler.Create)
-	userGroupRoute.GET("/", userHandler.Get)
-	userGroupRoute.GET("/:id", userHandler.GetByID)
-	userGroupRoute.PUT("/:id", userHandler.Update)
-	userGroupRoute.DELETE("/:id", userHandler.Delete)
+	userGroupRoute.POST("/", middlewares.AuthRequired(), userHandler.Create)
+	userGroupRoute.GET("/", middlewares.AuthRequired(), userHandler.Get)
+	userGroupRoute.GET("/:id", middlewares.AuthRequired(), userHandler.GetByID)
+	userGroupRoute.PUT("/:id", middlewares.AuthRequired(), userHandler.Update)
+	userGroupRoute.DELETE("/:id", middlewares.AuthRequired(), userHandler.Delete)
 
 	// Payment Route
 	paymentGroupRoute := apiGroupRoute.Group("payment")
-	paymentGroupRoute.POST("/", paymentHandler.CreatePayment)
-	paymentGroupRoute.POST("/idempotency_key", paymentHandler.CreatePaymentIdempotencyKey)
-
-	// TODO: module auth
+	paymentGroupRoute.POST("/", middlewares.AuthRequired(), paymentHandler.CreatePayment)
+	paymentGroupRoute.POST("/idempotency_key", middlewares.AuthRequired(), paymentHandler.CreatePaymentIdempotencyKey)
 
 }
