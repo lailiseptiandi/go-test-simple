@@ -14,7 +14,7 @@ import (
 
 type UserService interface {
 	Create(ctx context.Context, req request.UserRequest) (*models.User, error)
-	Get(req request.UserListRequest) ([]*models.User, error)
+	Get(req request.UserListRequest) ([]*models.User, *utils.Pagination, error)
 	FindByID(id string) (*models.User, error)
 	Update(ctx context.Context, req request.UserRequest) (*models.User, error)
 	Delete(ctx context.Context, id string) error
@@ -46,13 +46,13 @@ func (s *userService) Create(ctx context.Context, req request.UserRequest) (*mod
 	return user, nil
 }
 
-func (s *userService) Get(req request.UserListRequest) ([]*models.User, error) {
-	users, err := s.userRepo.Get(req)
+func (s *userService) Get(req request.UserListRequest) ([]*models.User, *utils.Pagination, error) {
+	users, pagination, err := s.userRepo.Get(req)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return users, nil
+	return users, pagination, nil
 }
 
 func (s *userService) FindByID(id string) (*models.User, error) {
