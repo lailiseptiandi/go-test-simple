@@ -21,16 +21,19 @@ func InitRoutes(dbs *gorm.DB, r *gin.Engine) {
 	// repository
 	paymentRepo := repository.NewPaymentRepository(dbs)
 	userRepo := repository.NewUserRepository(dbs)
+	categoryRepo := repository.NewCategoryRepository(dbs)
 
 	// service
 	paymentService := services.NewPaymentService(&paymentRepo)
-	userService := services.NewUserService(&userRepo)
-	authService := services.NewAuthService(&userRepo)
+	userService := services.NewUserService(userRepo)
+	authService := services.NewAuthService(userRepo)
+	categoryService := services.NewCategoryService(categoryRepo)
 
 	// handler
 	paymentHandler := handlers.NewPaymentHandler(paymentService)
 	userHandler := handlers.NewUserHandler(userService)
 	authHandler := handlers.NewAuthHandler(authService)
+	categoryHandler := handlers.NewCategoryHandler(categoryService)
 
 	// api group
 	apiGroupRoute := r.Group("api/v1/")
@@ -46,6 +49,14 @@ func InitRoutes(dbs *gorm.DB, r *gin.Engine) {
 	userGroupRoute.GET("/:id", middlewares.AuthRequired(), userHandler.GetByID)
 	userGroupRoute.PUT("/:id", middlewares.AuthRequired(), userHandler.Update)
 	userGroupRoute.DELETE("/:id", middlewares.AuthRequired(), userHandler.Delete)
+
+	// Category Route
+	categoryGroupRoute := apiGroupRoute.Group("category")
+	categoryGroupRoute.GET("/", middlewares.AuthRequired(), categoryHandler.Get)
+	categoryGroupRoute.GET("/:id", middlewares.AuthRequired(), categoryHandler.GetByID)
+	categoryGroupRoute.POST("/", middlewares.AuthRequired(), categoryHandler.Create)
+	categoryGroupRoute.PUT("/:id", middlewares.AuthRequired(), categoryHandler.Update)
+	categoryGroupRoute.DELETE("/:id", middlewares.AuthRequired(), categoryHandler.Delete)
 
 	// Payment Route
 	paymentGroupRoute := apiGroupRoute.Group("payment")

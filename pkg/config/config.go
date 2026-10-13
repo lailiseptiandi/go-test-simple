@@ -10,6 +10,7 @@ import (
 )
 
 type Config struct {
+	AppURL      string
 	Mode        string
 	HOST        string
 	PORT        int
@@ -35,6 +36,7 @@ func LoadConfig() (*Config, error) {
 	return &Config{
 		Mode:        getEnv("MODE", "development"),
 		HOST:        getEnv("HOST", "localhost"),
+		AppURL:      fmt.Sprintf("http://%s:%d", getEnv("HOST", "localhost"), port),
 		PORT:        port,
 		TimeZone:    getEnv("TIME_ZONE", "Asia/Jakarta"),
 		DB_HOST:     getEnv("DB_HOST", "localhost"),

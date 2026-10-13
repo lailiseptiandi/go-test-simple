@@ -7,24 +7,27 @@ import (
 )
 
 type APIResponse struct {
-	Success bool   `json:"success"`
-	Message string `json:"message"`
-	Data    any    `json:"data,omitempty"`
-	Errors  any    `json:"errors,omitempty"`
+	Success    bool   `json:"success"`
+	Message    string `json:"message"`
+	Data       any    `json:"data,omitempty"`
+	Errors     any    `json:"errors,omitempty"`
+	Pagination any    `json:"pagination,omitempty"`
 }
 
-func Success(c *gin.Context, data any) {
+func Success(c *gin.Context, data any, pagination any) {
 	c.JSON(http.StatusOK, APIResponse{
-		Success: true,
-		Data:    data,
+		Success:    true,
+		Data:       data,
+		Pagination: pagination,
 	})
 }
 
-func SuccessWithMessage(c *gin.Context, message string, data any) {
+func SuccessWithMessage(c *gin.Context, message string, data any, pagination any) {
 	c.JSON(http.StatusOK, APIResponse{
-		Success: true,
-		Message: message,
-		Data:    data,
+		Success:    true,
+		Message:    message,
+		Data:       data,
+		Pagination: pagination,
 	})
 }
 
