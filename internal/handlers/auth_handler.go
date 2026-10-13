@@ -38,7 +38,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	}
 
 	formatter := (&responses.UserResponse{}).FormatterLoginResponse(*user)
-	response.SuccessWithMessage(c, "successfully login", formatter)
+	response.SuccessWithMessage(c, "successfully login", formatter, nil)
 }
 
 func (h *AuthHandler) Register(c *gin.Context) {
@@ -57,5 +57,5 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	}
 
 	formatter := (&responses.UserResponse{}).FormatterLoginResponse(*user)
-	response.SuccessWithMessage(c, "successfully register user", formatter)
+	response.SuccessWithMessage(c, "successfully register user", formatter, nil)
 }

@@ -42,20 +42,13 @@ func (h *UserHandler) Get(c *gin.Context) {
 	page, _ := strconv.Atoi(c.Query("page"))
 	limit, _ := strconv.Atoi(c.Query("limit"))
 
-	if page <= 0 {
-		page = 1
-	}
-
-	if limit <= 0 {
-		limit = 20
-	}
 	req := request.UserListRequest{
 		Page:   page,
 		Limit:  limit,
 		Search: c.Query("search"),
 	}
 
-	users, err := h.userService.Get(req)
+	users, pagination, err := h.userService.Get(req)
 
 	if err != nil {
 		response.InternalServerError(c, err.Error())
@@ -63,7 +56,7 @@ func (h *UserHandler) Get(c *gin.Context) {
 	}
 
 	formatter := (&responses.UserResponse{}).FormatterGetUserResponse(users)
-	response.SuccessWithMessage(c, "Successfully get all users", formatter)
+	response.SuccessWithMessage(c, "Successfully get all users", formatter, pagination)
 }
 
 func (h *UserHandler) GetByID(c *gin.Context) {
@@ -81,7 +74,7 @@ func (h *UserHandler) GetByID(c *gin.Context) {
 	}
 
 	formatter := (&responses.UserResponse{}).FormatterUserResponse(*user)
-	response.SuccessWithMessage(c, "Successfully get user by id", formatter)
+	response.SuccessWithMessage(c, "Successfully get user by id", formatter, nil)
 }
 
 func (h *UserHandler) Update(c *gin.Context) {
@@ -125,5 +118,5 @@ func (h *UserHandler) Delete(c *gin.Context) {
 		response.InternalServerError(c, err.Error())
 		return
 	}
-	response.SuccessWithMessage(c, "Successfully deleted user", nil)
+	response.SuccessWithMessage(c, "Successfully deleted user", nil, nil)
 }

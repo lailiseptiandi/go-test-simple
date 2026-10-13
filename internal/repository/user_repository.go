@@ -5,12 +5,13 @@ import (
 
 	"github.com/lailiseptiandi/go-test-simple/internal/dtos/request"
 	"github.com/lailiseptiandi/go-test-simple/internal/models"
+	"github.com/lailiseptiandi/go-test-simple/pkg/utils"
 	"gorm.io/gorm"
 )
 
 type UserRepository interface {
 	Create(ctx context.Context, user models.User) (*models.User, error)
-	Get(req request.UserListRequest) ([]*models.User, error)
+	Get(req request.UserListRequest) ([]*models.User, *utils.Pagination, error)
 	FindByID(id int64) (*models.User, error)
 	FindByEmail(email string) (*models.User, error)
 	FindByEmailOrUsername(ctx context.Context, emailUsername string) (*models.User, error)
@@ -22,8 +23,8 @@ type userRepository struct {
 	db *gorm.DB
 }
 
-func NewUserRepository(db *gorm.DB) userRepository {
-	return userRepository{db: db}
+func NewUserRepository(db *gorm.DB) *userRepository {
+	return &userRepository{db: db}
 }
 
 func (r *userRepository) Create(ctx context.Context, user models.User) (*models.User, error) {
@@ -35,27 +36,31 @@ func (r *userRepository) Create(ctx context.Context, user models.User) (*models.
 	return &user, nil
 }
 
-func (r *userRepository) Get(req request.UserListRequest) ([]*models.User, error) {
+func (r *userRepository) Get(req request.UserListRequest) ([]*models.User, *utils.Pagination, error) {
 	var users []*models.User
-	query := r.db
-
-	page := req.Page
-	pageSize := req.Limit
+	query := r.db.Model(&models.User{})
 
 	if req.Search != "" {
 		search := "%" + req.Search + "%"
 		query = query.Where("name ilike ? OR username ilike ?", search, search)
 	}
 
-	offset := (page - 1) * pageSize
-	query = query.Offset(offset).Limit(pageSize)
-
-	err := query.Find(&users).Error
-	if err != nil {
-		return nil, err
+	pagination := &utils.Pagination{
+		CurrentPage: req.Page,
+		PerPage:     int64(req.Page),
 	}
 
-	return users, nil
+	queryPaginate, pagination, err := utils.Paginate(pagination, "users", query)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	err = queryPaginate.Find(&users).Error
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return users, pagination, nil
 }
 
 func (r *userRepository) FindByID(id int64) (*models.User, error) {
