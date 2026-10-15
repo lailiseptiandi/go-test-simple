@@ -1,0 +1,25 @@
+// Running Producer Skema
+docker exec -it go_kafka \
+  /opt/kafka/bin/kafka-console-producer.sh \
+  --bootstrap-server kafka:9092 \
+  --topic payment.events
+
+payload:
+
+{
+  "topic": "payment.events",
+  "event_type": "payment.success",
+  "data": {
+    "payment_id": 1,
+    "order_id": "ORD-001",
+    "status": "SUCCESS"
+  }
+}
+
+// Running Consumer Skema
+docker exec -it go_kafka \
+  /opt/kafka/bin/kafka-console-consumer.sh \
+  --bootstrap-server kafka:9092 \
+  --topic payment.events \
+  --group payment-test \
+  --from-beginning

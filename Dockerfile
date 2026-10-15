@@ -6,14 +6,22 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/bin/app ./cmd/main.go
+
+ARG APP=api
+
+RUN CGO_ENABLED=0 GOOS=linux \
+    go build -ldflags="-s -w" \
+    -o /app/bin/app ./cmd/${APP}
 
 FROM alpine:3.20
 
 RUN apk --no-cache add ca-certificates tzdata
 
+WORKDIR /usr/src/app
+
+COPY --from=builder --chown=nobody:nobody \
+    /app/bin/app /usr/local/bin/app
+
 USER nobody:nobody
 
-COPY --from=builder /app/bin/app /usr/local/bin/app
-
-CMD ["app"]
+CMD ["/usr/local/bin/app"]
